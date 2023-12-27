@@ -1,5 +1,5 @@
 <template>
-  <template v-for="(product, index) in products" :key="index">
+  <template v-for="product in filterProducts" :key="product.martCode">
     <div
       class="justify-center items-stretch bg-zinc-100 self-center flex w-full max-w-[342px] gap-3 mt-5 p-2 rounded-lg"
     >
@@ -16,7 +16,7 @@
             {{ product.productName }}
           </div>
           <div class="text-neutral-800 text-xs font-bold self-center whitespace-nowrap my-auto">
-            {{ product.price }}
+            {{ product.formatPrice }}
           </div>
         </div>
         <div class="justify-between items-center flex w-full gap-5 mt-2">
@@ -48,9 +48,16 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductData } from '@/types/product';
+import { defineProps } from 'vue';
+import formatCurrency from '@/helpers/format';
+import type { ProductDetail } from '@/types/product';
 
-defineProps<{
-  products: ProductData[];
+const props = defineProps<{
+  products: ProductDetail[];
 }>();
+
+const filterProducts = props.products.map((item) => ({
+  ...item,
+  formatPrice: formatCurrency(item.price),
+}));
 </script>
