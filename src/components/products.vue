@@ -1,11 +1,11 @@
 <template>
-  <template v-for="product in filterProducts" :key="product.martCode">
+  <template v-for="detail in products" :key="detail.martCode">
     <div
       class="justify-center items-stretch bg-zinc-100 self-center flex w-full max-w-[342px] gap-3 mt-5 p-2 rounded-lg"
     >
       <img
         loading="lazy"
-        :src="product.image"
+        :src="detail.image"
         class="aspect-square object-contain object-center w-16 overflow-hidden shrink-0 max-w-full"
       />
       <div class="items-stretch self-center flex grow basis-[0%] flex-col my-auto">
@@ -13,33 +13,44 @@
           <div
             class="overflow-hidden text-neutral-800 text-ellipsis whitespace-nowrap text-xs font-[450] leading-5 grow"
           >
-            {{ product.productName }}
+            {{ detail.productName }}
           </div>
           <div class="text-neutral-800 text-xs font-bold self-center whitespace-nowrap my-auto">
-            {{ product.formatPrice }}
+            {{ detail.formatPrice }}
           </div>
         </div>
         <div class="justify-between items-center flex w-full gap-5 mt-2">
           <div class="items-stretch flex gap-4 my-auto px-5">
             <div class="text-neutral-800 text-xs font-[450]">
               <span class="text-neutral-800">Size</span> -
-              <span class="font-bold leading-4">{{ product.productSize }}</span>
+              <span class="font-bold leading-4">{{ detail.productSize }}</span>
             </div>
             <div class="text-neutral-800 text-xs font-[450]">
               <span class="text-neutral-800">Color</span> -
-              <span class="font-bold leading-4">{{ product.productColor }}</span>
+              <span class="font-bold leading-4">{{ detail.productColor }}</span>
             </div>
           </div>
           <div class="items-stretch self-stretch flex justify-between gap-2">
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/3de065a99837618fff96505383fced5b71023a9215f72ca5c23ed19718e9f4b7?apiKey=64907ebed4364efab5134402254f936d&"
-              class="aspect-square object-contain object-center w-6 justify-center items-center overflow-hidden shrink-0 max-w-full"
-            /><img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/08c73ced8a1e391cba509b0f840bf197ed40d769da59d06b681a5e0a40f5b7f2?apiKey=64907ebed4364efab5134402254f936d&"
-              class="aspect-square object-contain object-center w-6 justify-center items-center overflow-hidden shrink-0 max-w-full"
-            />
+            <button
+              :disabled="detail.productQty === 1 || detail.quantity > detail.productQty"
+              @click="changeQty(detail, 'increase')"
+            >
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/3de065a99837618fff96505383fced5b71023a9215f72ca5c23ed19718e9f4b7?apiKey=64907ebed4364efab5134402254f936d&"
+                class="aspect-square object-contain object-center w-6 justify-center items-center overflow-hidden shrink-0 max-w-full"
+              />
+            </button>
+            <button
+              :disabled="detail.quantity === detail.productQty"
+              @click="changeQty(detail, 'reduce')"
+            >
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/08c73ced8a1e391cba509b0f840bf197ed40d769da59d06b681a5e0a40f5b7f2?apiKey=64907ebed4364efab5134402254f936d&"
+                class="aspect-square object-contain object-center w-6 justify-center items-center overflow-hidden shrink-0 max-w-full"
+              />
+            </button>
           </div>
         </div>
       </div>
@@ -48,16 +59,32 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
-import formatCurrency from '@/helpers/format';
+import { ref } from 'vue';
 import type { ProductDetail } from '@/types/product';
 
-const props = defineProps<{
+defineProps<{
   products: ProductDetail[];
 }>();
 
-const filterProducts = props.products.map((item) => ({
-  ...item,
-  formatPrice: formatCurrency(item.price),
-}));
+const setQuantity = ref<number>(1);
+
+const emit = defineEmits(['update']);
+const update = (details: ProductDetail): void => {
+  emit('update', {
+    ...details,
+    quantity: setQuantity.value,
+  });
+};
+
+const changeQty = (details: object, mode: string): void => {
+  const { productQty, quantity }: { productQty: number; quantity: number } = details as {
+    productQty: number;
+    quantity: number;
+  };
+  const increaseQty = quantity + 1 > productQty ? productQty : quantity + 1;
+  const reduceQty = quantity - 1 < 1 ? 1 : quantity - 1;
+  const getQty = mode === 'increase' ? increaseQty : reduceQty;
+  setQuantity.value = getQty;
+  update(details);
+};
 </script>

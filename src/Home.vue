@@ -3,7 +3,7 @@
     class="bg-white flex max-w-[480px] w-full flex-col items-stretch mx-auto pt-12 rounded-[32px]"
   >
     <Header />
-    <Products :products="products" />
+    <Products :products="instantProducts" @update="updateProductList" />
     <TotalAmount />
     <Coupon />
     <CheckOut />
@@ -14,18 +14,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import useProductStore from '@/stores/product';
 import Header from '@/components/Utils/header.vue';
 import Products from '@/components/products.vue';
 import TotalAmount from '@/components/totalAmount.vue';
 import Coupon from '@/components/coupon.vue';
 import CheckOut from '@/components/checkOut.vue';
+import formatCurrency from '@/helpers/format';
 import type { ProductDetail } from '@/types/product';
 
-const products = ref<ProductDetail[]>(useProductStore.details);
+const productDetail = useProductStore.details;
+const instantProducts = ref<ProductDetail[]>([]);
 const totalQuantity = ref(0);
 const totalPrice = ref(0);
+
+instantProducts.value = productDetail.map((product) => {
+  return {
+    ...product,
+    formatPrice: formatCurrency(product.price),
+    quantity: 1,
+  };
+});
+
+const updateProductList = (params: ProductDetail): void => {
+  const index = instantProducts.value.findIndex((item) => item.martCode === params.martCode);
+  if (index === -1) {
+    instantProducts.value.push(params);
+  } else {
+    instantProducts.value[index] = params;
+  }
+  totalQuantity.value = instantProducts.value.reduce((acc, item) => acc + item.quantity, 0);
+  totalPrice.value = instantProducts.value.reduce(
+    (acc, item) => acc + item.quantity * item.price,
+    0,
+  );
+};
 
 const checkout = (): void => {};
 </script>
