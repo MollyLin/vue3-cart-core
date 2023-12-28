@@ -4,7 +4,7 @@
   >
     <Header />
     <Products :products="instantProducts" @update="updateProductList" />
-    <TotalAmount />
+    <TotalAmount :total-price="totalPrice" :total-quantity="totalQuantity" />
     <Coupon />
     <CheckOut />
     <div class="justify-center items-center bg-white flex w-full flex-col px-16 py-2">
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import useProductStore from '@/stores/product';
 import Header from '@/components/Utils/header.vue';
 import Products from '@/components/products.vue';
@@ -29,7 +29,7 @@ const instantProducts = ref<ProductDetail[]>([]);
 const totalQuantity = ref(0);
 const totalPrice = ref(0);
 
-instantProducts.value = productDetail.map((product) => {
+const formattedProducts = productDetail.map((product) => {
   return {
     ...product,
     formatPrice: formatCurrency(product.price),
@@ -37,13 +37,7 @@ instantProducts.value = productDetail.map((product) => {
   };
 });
 
-const updateProductList = (params: ProductDetail): void => {
-  const index = instantProducts.value.findIndex((item) => item.martCode === params.martCode);
-  if (index === -1) {
-    instantProducts.value.push(params);
-  } else {
-    instantProducts.value[index] = params;
-  }
+const getAmountAndQuantity = () => {
   totalQuantity.value = instantProducts.value.reduce((acc, item) => acc + item.quantity, 0);
   totalPrice.value = instantProducts.value.reduce(
     (acc, item) => acc + item.quantity * item.price,
@@ -51,5 +45,20 @@ const updateProductList = (params: ProductDetail): void => {
   );
 };
 
-const checkout = (): void => {};
+const updateProductList = (params: ProductDetail): void => {
+  const index = instantProducts.value.findIndex((item) => item.martCode === params.martCode);
+  if (index === -1) {
+    instantProducts.value.push(params);
+    return;
+  }
+  instantProducts.value[index] = params;
+  getAmountAndQuantity();
+};
+
+onMounted(() => {
+  instantProducts.value = formattedProducts;
+  nextTick(() => {
+    getAmountAndQuantity();
+  });
+});
 </script>

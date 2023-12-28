@@ -22,12 +22,16 @@
         <div class="justify-between items-center flex w-full gap-5 mt-2">
           <div class="items-stretch flex gap-4 my-auto px-5">
             <div class="text-neutral-800 text-xs font-[450]">
-              <span class="text-neutral-800">Size</span> -
-              <span class="font-bold leading-4">{{ detail.productSize }}</span>
+              <span class="text-neutral-800">尺寸</span>
+              <span class="leading-4">{{ detail.productSize }}</span>
             </div>
             <div class="text-neutral-800 text-xs font-[450]">
-              <span class="text-neutral-800">Color</span> -
-              <span class="font-bold leading-4">{{ detail.productColor }}</span>
+              <span class="text-neutral-800">顏色</span>
+              <span class="leading-4">{{ detail.productColor }}</span>
+            </div>
+            <div class="text-neutral-800 text-xs font-[450]">
+              <span class="text-neutral-800">數量</span>
+              <span class="leading-4">{{ detail.quantity }}</span>
             </div>
           </div>
           <div class="items-stretch self-stretch flex justify-between gap-2">
@@ -42,7 +46,7 @@
               />
             </button>
             <button
-              :disabled="detail.quantity === detail.productQty"
+              :disabled="detail.quantity > detail.productQty"
               @click="changeQty(detail, 'reduce')"
             >
               <img
