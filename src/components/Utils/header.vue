@@ -9,7 +9,18 @@
       <div class="text-neutral-800 text-base font-bold my-auto">Cart</div>
     </div>
     <div class="text-neutral-800 text-base font-[450] whitespace-nowrap mt-7 self-end">
-      Remove All
+      <button
+        class="bg-violet-100 hover:bg-violet-300 px-5 py-2 text-sm leading-5 rounded-full font-normal text-black"
+        @click="removeAll"
+      >
+        Remove All
+      </button>
     </div>
   </div>
 </template>
+<script setup lang="ts">
+const emit = defineEmits(['removeAll']);
+const removeAll = (): void => {
+  emit('removeAll');
+};
+</script>

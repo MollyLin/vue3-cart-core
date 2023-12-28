@@ -2,7 +2,7 @@
   <div
     class="bg-white flex max-w-[480px] w-full flex-col items-stretch mx-auto pt-12 rounded-[32px]"
   >
-    <Header />
+    <Header @remove-all="removeAll" />
     <Products :products="instantProducts" @update="updateProductList" />
     <TotalAmount :total-price="totalPrice" :total-quantity="totalQuantity" />
     <Coupon />
@@ -43,6 +43,11 @@ const getAmountAndQuantity = () => {
     (acc, item) => acc + item.quantity * item.price,
     0,
   );
+};
+
+const removeAll = (): void => {
+  instantProducts.value = Array.from([]);
+  getAmountAndQuantity();
 };
 
 const updateProductList = (params: ProductDetail): void => {
