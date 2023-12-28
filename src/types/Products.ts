@@ -1,5 +1,6 @@
 export interface ProductData {
   details: ProductDetail[];
+  couponDiscount: number;
   couponMarts: [];
 }
 
@@ -12,9 +13,4 @@ export interface ProductDetail {
   image: string;
   description: string;
   productQty: number;
-}
-
-export interface CouponMarts {
-  martId: number;
-  price: number;
 }

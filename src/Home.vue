@@ -4,17 +4,27 @@
   >
     <Header @remove-all="removeAll" />
     <Products :products="instantProducts" @update="updateProductList" />
-    <TotalAmount :total-price="totalPrice" :total-quantity="totalQuantity" />
-    <Coupon />
+    <TotalAmount
+      :is-use-coupon="isUseCoupon"
+      :coupon-discount="couponDiscount"
+      :sub-total-price="subTotalPrice"
+      :total-price="totalPrice"
+      :total-quantity="totalQuantity"
+    />
+    <Coupon @use-coupon="useCoupon" />
     <CheckOut />
-    <div class="justify-center items-center bg-white flex w-full flex-col px-16 py-2">
-      <div class="bg-neutral-800 flex w-[134px] shrink-0 h-[5px] flex-col rounded-[100px]"></div>
+    <div
+      class="justify-center items-center bg-white flex w-full flex-col px-16 py-2"
+    >
+      <div
+        class="bg-neutral-800 flex w-[134px] shrink-0 h-[5px] flex-col rounded-[100px]"
+      ></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
 import useProductStore from '@/stores/product';
 import Header from '@/components/Utils/header.vue';
 import Products from '@/components/products.vue';
@@ -25,8 +35,11 @@ import formatCurrency from '@/helpers/format';
 import type { ProductDetail } from '@/types/product';
 
 const productDetail = useProductStore.details;
+const couponDiscount = useProductStore.couponDiscount;
 const instantProducts = ref<ProductDetail[]>([]);
+const isUseCoupon = ref(false);
 const totalQuantity = ref(0);
+const subTotalPrice = ref(0);
 const totalPrice = ref(0);
 
 const formattedProducts = productDetail.map((product) => {
@@ -38,11 +51,16 @@ const formattedProducts = productDetail.map((product) => {
 });
 
 const getAmountAndQuantity = () => {
-  totalQuantity.value = instantProducts.value.reduce((acc, item) => acc + item.quantity, 0);
-  totalPrice.value = instantProducts.value.reduce(
+  totalQuantity.value = instantProducts.value.reduce(
+    (acc, item) => acc + item.quantity,
+    0,
+  );
+  subTotalPrice.value = instantProducts.value.reduce(
     (acc, item) => acc + item.quantity * item.price,
     0,
   );
+  const getCouponDiscount = isUseCoupon.value ? couponDiscount : 0;
+  totalPrice.value = subTotalPrice.value - getCouponDiscount;
 };
 
 const removeAll = (): void => {
@@ -51,7 +69,9 @@ const removeAll = (): void => {
 };
 
 const updateProductList = (params: ProductDetail): void => {
-  const index = instantProducts.value.findIndex((item) => item.martCode === params.martCode);
+  const index = instantProducts.value.findIndex(
+    (item) => item.martCode === params.martCode,
+  );
   if (index === -1) {
     instantProducts.value.push(params);
     return;
@@ -59,6 +79,14 @@ const updateProductList = (params: ProductDetail): void => {
   instantProducts.value[index] = params;
   getAmountAndQuantity();
 };
+
+const useCoupon = (param: boolean): void => {
+  isUseCoupon.value = param;
+};
+
+watch(isUseCoupon, () => {
+  totalPrice.value = subTotalPrice.value - couponDiscount;
+});
 
 onMounted(() => {
   instantProducts.value = formattedProducts;

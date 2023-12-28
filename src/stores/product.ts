@@ -1,4 +1,4 @@
-import type { ProductData, ProductDetail, CouponMarts } from '@/types/Products';
+import type { ProductData, ProductDetail } from '@/types/Products';
 
 const useProductStore = {
   details: [
@@ -27,20 +27,7 @@ const useProductStore = {
       productQty: 7,
     },
   ] as ProductDetail[],
-  couponMarts: [
-    {
-      martId: 1,
-      price: 10,
-    },
-    {
-      martId: 2,
-      price: 20,
-    },
-    {
-      martId: 1,
-      price: 20,
-    },
-  ] as CouponMarts[],
+  couponDiscount: 10,
 } as ProductData;
 
 export default useProductStore;
