@@ -11,7 +11,7 @@
       :total-price="totalPrice"
       :total-quantity="totalQuantity"
     />
-    <Coupon @use-coupon="useCoupon" />
+    <Coupon :total-quantity="totalQuantity" @use-coupon="useCoupon" />
     <CheckOut />
     <div
       class="justify-center items-center bg-white flex w-full flex-col px-16 py-2"
@@ -60,12 +60,15 @@ const getAmountAndQuantity = () => {
     0,
   );
   const getCouponDiscount = isUseCoupon.value ? couponDiscount : 0;
-  totalPrice.value = subTotalPrice.value - getCouponDiscount;
+  totalPrice.value = Math.max(subTotalPrice.value - getCouponDiscount);
 };
 
 const removeAll = (): void => {
   instantProducts.value = Array.from([]);
-  getAmountAndQuantity();
+  isUseCoupon.value = false;
+  nextTick(() => {
+    getAmountAndQuantity();
+  });
 };
 
 const updateProductList = (params: ProductDetail): void => {
@@ -85,7 +88,7 @@ const useCoupon = (param: boolean): void => {
 };
 
 watch(isUseCoupon, () => {
-  totalPrice.value = subTotalPrice.value - couponDiscount;
+  totalPrice.value = Math.max(subTotalPrice.value - couponDiscount);
 });
 
 onMounted(() => {

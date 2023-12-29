@@ -15,7 +15,7 @@
         v-model.trim="couponCodeInput"
       />
     </div>
-    <button type="button" @click="useCoupon">
+    <button type="button" :disabled="totalQuantity === 0" @click="useCoupon">
       <img
         loading="lazy"
         src="https://cdn.builder.io/api/v1/image/assets/TEMP/1f49bc858e6469a9db18db0b3fec971cf893ad1b97997dac60924b7fdd47f7f1?apiKey=64907ebed4364efab5134402254f936d&"
@@ -24,20 +24,28 @@
     </button>
   </div>
   <div
-    v-if="false"
+    v-if="hasError"
     class="self-center flex w-full max-w-[342px] items-center justify-between gap-5 mt-1 pl-4 pr-2.5 py-0.5 rounded-lg"
   >
-    <p class="text-rose-600">error test</p>
+    <p class="text-rose-600">序號輸入錯誤</p>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 const couponCodeInput = ref<string>('');
+const hasError = ref<boolean>(false);
+
+defineProps<{
+  totalQuantity: number;
+}>();
 
 const emit = defineEmits(['use-coupon']);
 const useCoupon = (): void => {
-  if (couponCodeInput.value !== 'love2024') return;
+  if (couponCodeInput.value !== 'love2024') {
+    hasError.value = true;
+    return;
+  }
   emit('use-coupon', true);
 };
 </script>
