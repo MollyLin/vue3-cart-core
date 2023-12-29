@@ -9,10 +9,11 @@
         class="aspect-square object-contain object-center w-6 overflow-hidden shrink-0 max-w-full"
       />
       <input
-        class="bg-zinc-100 w-full rounded-md px-1 py-1.5 text-neutral-000 text-opacity-90 font-[450] leading-5 self-center grow whitespace-nowrap my-auto focus:ring-1 focus:ring-gray-300"
+        class="bg-zinc-100 w-full rounded-md px-1 py-1.5 text-neutral-000 text-opacity-90 font-[450] leading-5 self-center grow whitespace-nowrap my-auto focus:ring-1 focus:ring-gray-300 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
         type="text"
         placeholder="love2024"
         v-model.trim="couponCodeInput"
+        :disabled="isUseCoupon"
       />
     </div>
     <button type="button" :disabled="totalQuantity === 0" @click="useCoupon">
@@ -37,6 +38,7 @@ const couponCodeInput = ref<string>('');
 const hasError = ref<boolean>(false);
 
 defineProps<{
+  isUseCoupon: boolean;
   totalQuantity: number;
 }>();
 
@@ -46,6 +48,7 @@ const useCoupon = (): void => {
     hasError.value = true;
     return;
   }
+  hasError.value = false;
   emit('use-coupon', true);
 };
 </script>

@@ -11,7 +11,11 @@
       :total-price="totalPrice"
       :total-quantity="totalQuantity"
     />
-    <Coupon :total-quantity="totalQuantity" @use-coupon="useCoupon" />
+    <Coupon
+      :is-use-coupon="isUseCoupon"
+      :total-quantity="totalQuantity"
+      @use-coupon="useCoupon"
+    />
     <CheckOut />
     <div
       class="justify-center items-center bg-white flex w-full flex-col px-16 py-2"
