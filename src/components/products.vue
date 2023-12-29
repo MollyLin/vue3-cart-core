@@ -1,6 +1,8 @@
 <template>
   <template v-if="products.length === 0">
-    <div class="justify-center self-center flex w-full max-w-[342px] my-16 p-2 rounded-lg">
+    <div
+      class="justify-center self-center flex w-full max-w-[342px] my-16 p-2 rounded-lg"
+    >
       <div class="pr-1.5">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -30,14 +32,18 @@
         :src="detail.image"
         class="aspect-square object-contain object-center w-16 overflow-hidden shrink-0 max-w-full"
       />
-      <div class="items-stretch self-center flex grow basis-[0%] flex-col my-auto">
+      <div
+        class="items-stretch self-center flex grow basis-[0%] flex-col my-auto"
+      >
         <div class="items-stretch flex justify-between gap-4 px-5">
           <div
             class="overflow-hidden text-neutral-800 text-ellipsis whitespace-nowrap text-xs font-[450] leading-5 grow"
           >
             {{ detail.productName }}
           </div>
-          <div class="text-neutral-800 text-xs font-bold self-center whitespace-nowrap my-auto">
+          <div
+            class="text-neutral-800 text-xs font-bold self-center whitespace-nowrap my-auto"
+          >
             {{ detail.formatPrice }}
           </div>
         </div>
@@ -58,7 +64,9 @@
           </div>
           <div class="items-stretch self-stretch flex justify-between gap-2">
             <button
-              :disabled="detail.productQty === 1 || detail.quantity > detail.productQty"
+              :disabled="
+                detail.productQty === 1 || detail.quantity > detail.productQty
+              "
               @click="changeQty(detail, 'increase')"
             >
               <img
@@ -86,27 +94,28 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { ProductDetail } from '@/types/product';
+import type { InstantProducts } from '@/types/Products';
 
 defineProps<{
-  products: ProductDetail[];
+  products: InstantProducts[];
 }>();
 
 const setQuantity = ref<number>(1);
 
 const emit = defineEmits(['update']);
-const update = (details: ProductDetail): void => {
+const update = (details: InstantProducts): void => {
   emit('update', {
     ...details,
     quantity: setQuantity.value,
   });
 };
 
-const changeQty = (details: object, mode: string): void => {
-  const { productQty, quantity }: { productQty: number; quantity: number } = details as {
-    productQty: number;
-    quantity: number;
-  };
+const changeQty = (details: InstantProducts, mode: string): void => {
+  const { productQty, quantity }: { productQty: number; quantity: number } =
+    details as {
+      productQty: number;
+      quantity: number;
+    };
   const increaseQty = quantity + 1 > productQty ? productQty : quantity + 1;
   const reduceQty = quantity - 1 < 1 ? 1 : quantity - 1;
   const getQty = mode === 'increase' ? increaseQty : reduceQty;
