@@ -14,3 +14,8 @@ export interface ProductDetail {
   description: string;
   productQty: number;
 }
+
+export interface InstantProducts extends ProductDetail {
+  formatPrice: string;
+  quantity: number;
+}

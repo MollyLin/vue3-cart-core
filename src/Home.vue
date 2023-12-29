@@ -32,11 +32,11 @@ import TotalAmount from '@/components/totalAmount.vue';
 import Coupon from '@/components/coupon.vue';
 import CheckOut from '@/components/checkOut.vue';
 import formatCurrency from '@/helpers/format';
-import type { ProductDetail } from '@/types/product';
+import type { InstantProducts } from '@/types/Products';
 
 const productDetail = useProductStore.details;
 const couponDiscount = useProductStore.couponDiscount;
-const instantProducts = ref<ProductDetail[]>([]);
+const instantProducts = ref<InstantProducts[]>([]);
 const isUseCoupon = ref(false);
 const totalQuantity = ref(0);
 const subTotalPrice = ref(0);
@@ -48,7 +48,7 @@ const formattedProducts = productDetail.map((product) => {
     formatPrice: formatCurrency(product.price),
     quantity: 1,
   };
-});
+}) as InstantProducts[];
 
 const getAmountAndQuantity = () => {
   totalQuantity.value = instantProducts.value.reduce(
@@ -71,7 +71,7 @@ const removeAll = (): void => {
   });
 };
 
-const updateProductList = (params: ProductDetail): void => {
+const updateProductList = (params: InstantProducts): void => {
   const index = instantProducts.value.findIndex(
     (item) => item.martCode === params.martCode,
   );
